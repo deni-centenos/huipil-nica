@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, UserRound, X } from 'lucide-react'
 import { getConfiguracionNegocio } from '../../services/catalogService'
 import type { BusinessConfig } from '../../types'
 import { FloatingWhatsAppButton } from './FloatingWhatsAppButton'
@@ -60,33 +60,24 @@ export function PublicLayout() {
             </p>
           </Link>
 
-          {/* MENÚ PC */}
-<div className="hidden items-center gap-6 md:flex">
-  <nav className="flex items-center gap-6">
-    {navItems.map((item) => (
-      <NavLink
-        key={item.to}
-        to={item.to}
-        className={({ isActive }) =>
-          `text-sm font-medium transition ${
-            isActive
-              ? 'text-white'
-              : 'text-[#DCE3E8] hover:text-white'
-          }`
-        }
-      >
-        {item.label}
-      </NavLink>
-    ))}
-  </nav>
-
-  <Link
-    to="/admin"
-    className="rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-[#102635]"
-  >
-    Acceso dueño
-  </Link>
-</div>
+{/* MENÚ PC */}
+<nav className="hidden items-center gap-6 md:flex">
+  {navItems.map((item) => (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      className={({ isActive }) =>
+        `text-sm font-medium transition ${
+          isActive
+            ? 'text-white'
+            : 'text-[#DCE3E8] hover:text-white'
+        }`
+      }
+    >
+      {item.label}
+    </NavLink>
+  ))}
+</nav>
 
           {/* BOTÓN MENÚ MÓVIL */}
           <button
@@ -153,13 +144,7 @@ export function PublicLayout() {
                 </NavLink>
               ))}
 
-              <Link
-                to="/admin"
-                onClick={() => setOpen(false)}
-                className="mt-4 rounded-2xl bg-[#102635] px-4 py-3 text-center font-bold text-white"
-              >
-                Acceso dueño
-              </Link>
+              
             </nav>
           </aside>
         </div>
@@ -235,9 +220,14 @@ export function PublicLayout() {
               Sobre nosotros
             </Link>
 
-            <Link to="/admin" className="text-xs text-[#C9D6DF] hover:text-white">
-              Acceso dueño
-            </Link>
+            <Link
+  to="/admin/login"
+  className="mt-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-[#C9D6DF] transition hover:bg-white hover:text-[#102635]"
+  aria-label="Acceso dueño"
+  title="Acceso dueño"
+>
+  <UserRound size={20} />
+</Link>
           </div>
         </div>
       </footer>

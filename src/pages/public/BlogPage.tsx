@@ -39,8 +39,9 @@ export function BlogPage() {
           </h1>
 
           <p className="mt-4 text-lg text-gray-600">
-            Conoce más sobre la historia, el cuidado y la belleza de los trajes
-            típicos nicaragüenses.
+            Explora las historias, el orgullo y la magia detrás de cada una de nuestras piezas. 
+            Aquí encontrarás videos de nuestras colecciones, el origen de sus tejidos y todo el valor cultural que guardan nuestros trajes típicos. 
+            ¡Lleva nuestra tradición contigo!
           </p>
         </div>
 

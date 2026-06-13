@@ -4,7 +4,7 @@ export const negocio = {
   nombre: 'Huipil Nica',
   slogan: 'Tradición, cultura y elegancia nicaragüense',
   descripcion:
-    'Catálogo artesanal de trajes típicos, huipiles, máscaras y accesorios para venta y alquiler.',
+    'Catálogo artesanal de trajes típicos, máscaras y accesorios para venta y alquiler.',
   whatsapp: '50588888888',
   telefono: '8888-8888',
   direccion: 'Estelí, Nicaragua',
@@ -18,7 +18,7 @@ export const categorias: Category[] = [
     id: 1,
     nombre: 'Damas',
     slug: 'damas',
-    descripcion: 'Trajes típicos y huipiles para damas.',
+    descripcion: 'Trajes típicos para damas.',
   },
   {
     id: 2,

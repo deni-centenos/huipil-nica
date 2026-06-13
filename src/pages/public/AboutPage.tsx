@@ -56,7 +56,7 @@ export function AboutPage() {
 
   const historia =
     config?.historia ||
-    'Somos un emprendimiento dedicado a resaltar la cultura nicaragüense mediante la venta y alquiler de trajes típicos, huipiles, máscaras y accesorios tradicionales.'
+    'Somos un emprendimiento dedicado a resaltar la cultura nicaragüense mediante la venta y alquiler de trajes típicos, máscaras y accesorios tradicionales.'
 
   const mision =
     config?.mision ||
@@ -68,14 +68,14 @@ export function AboutPage() {
 
   const descripcion =
     config?.descripcionInicio ||
-    'Catálogo artesanal de trajes típicos, huipiles, máscaras y accesorios para venta y alquiler.'
+    'Catálogo artesanal de trajes típicos, máscaras y accesorios para venta y alquiler.'
 
   const imagenPortada = config?.portadaUrl || '/img/fondo-catalogo.png'
 
   return (
     <div>
       <section className="relative overflow-hidden">
-        <div className="relative min-h-[280px] overflow-hidden">
+        <div className="relative min-h-70 overflow-hidden">
           <img
             src={imagenPortada}
             alt={nombreNegocio}
@@ -84,7 +84,7 @@ export function AboutPage() {
 
           <div className="absolute inset-0 bg-black/35" />
 
-          <div className="relative mx-auto flex min-h-[280px] max-w-7xl items-center px-5 py-16">
+          <div className="relative mx-auto flex min-h-70 max-w-7xl items-center px-5 py-16">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.25em] text-white">
                 Sobre nosotros
@@ -151,7 +151,7 @@ export function AboutPage() {
           <div className="space-y-6">
             <article className="rounded-3xl bg-white p-8 shadow-sm">
               <h2 className="text-2xl font-bold text-[#102635]">
-                Nuestra historia
+                Quienes Somos
               </h2>
 
               <p className="mt-4 leading-relaxed text-gray-700">{historia}</p>
