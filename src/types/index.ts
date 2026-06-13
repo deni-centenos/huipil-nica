@@ -64,3 +64,25 @@ export type BlogContent = {
   createdAt: string
   updatedAt: string
 }
+
+export type ReviewStatus = 'PENDIENTE' | 'APROBADA' | 'RECHAZADA'
+
+export type Review = {
+  id: number
+  nombre: string
+  apellido: string
+  puntuacion: number
+  descripcion: string
+  estado: ReviewStatus
+  revisadoPor: string
+  revisadoEn: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type ReviewFormInput = {
+  nombre: string
+  apellido: string
+  puntuacion: number
+  descripcion: string
+}

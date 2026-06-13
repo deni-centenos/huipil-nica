@@ -16,8 +16,8 @@ import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 import { AdminProductFormPage } from './pages/admin/AdminProductFormPage'
 import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute'
 import { AdminConfigPage } from './pages/admin/AdminConfigPage'
-import { AdminComingSoonPage } from './pages/admin/AdminComingSoonPage'
 import { AdminBlogPage } from './pages/admin/AdminBlogPage'
+import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
 
 
 function App() {
@@ -53,15 +53,7 @@ function App() {
 
         <Route path="/admin/blog" element={<AdminBlogPage />} />
 
-<Route
-  path="/admin/resenas"
-  element={
-    <AdminComingSoonPage
-      title="Reseñas"
-      description="Aquí el dueño podrá administrar opiniones de clientes, comentarios destacados y calificaciones visibles en la página pública."
-    />
-  }
-/>
+<Route path="/admin/resenas" element={<AdminReviewsPage />} />
       </Route>
     </Routes>
   )
