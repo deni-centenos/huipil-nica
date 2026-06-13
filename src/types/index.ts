@@ -45,3 +45,22 @@ export type BusinessConfig = {
   logoUrl: string
   portadaUrl: string
 }
+
+export type BlogContentType = 'BLOG' | 'VIDEO'
+
+export type BlogContent = {
+  id: number
+  tipo: BlogContentType
+  titulo: string
+  slug: string
+  resumen: string
+  contenido: string
+  imagenUrl: string
+  videoUrl: string
+  videoPath: string
+  activo: boolean
+  destacado: boolean
+  orden: number
+  createdAt: string
+  updatedAt: string
+}

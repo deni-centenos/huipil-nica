@@ -17,6 +17,8 @@ import { AdminProductFormPage } from './pages/admin/AdminProductFormPage'
 import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute'
 import { AdminConfigPage } from './pages/admin/AdminConfigPage'
 import { AdminComingSoonPage } from './pages/admin/AdminComingSoonPage'
+import { AdminBlogPage } from './pages/admin/AdminBlogPage'
+
 
 function App() {
   return (
@@ -49,15 +51,7 @@ function App() {
         <Route path="/admin/categorias" element={<AdminCategoriesPage />} />
         <Route path="/admin/configuracion" element={<AdminConfigPage />} />
 
-        <Route
-  path="/admin/blog"
-  element={
-    <AdminComingSoonPage
-      title="Blog y videos"
-      description="Aquí el dueño podrá publicar artículos culturales, videos, historias de trajes y contenido relacionado con tradiciones nicaragüenses."
-    />
-  }
-/>
+        <Route path="/admin/blog" element={<AdminBlogPage />} />
 
 <Route
   path="/admin/resenas"
