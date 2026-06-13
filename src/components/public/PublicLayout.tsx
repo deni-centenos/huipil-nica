@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { getConfiguracionNegocio } from '../../services/catalogService'
 import type { BusinessConfig } from '../../types'
+import { FloatingWhatsAppButton } from './FloatingWhatsAppButton'
 
 const navItems = [
   { label: 'Categorías', to: '/catalogo' },
@@ -165,12 +166,14 @@ export function PublicLayout() {
       )}
 
       {/* CONTENIDO */}
-      <main>
-        <Outlet />
-      </main>
+<main>
+  <Outlet />
+</main>
 
-      {/* FOOTER */}
-      <footer className="mt-16 bg-[#102635] px-5 py-8 text-white">
+<FloatingWhatsAppButton config={config} />
+
+{/* FOOTER */}
+<footer className="mt-16 bg-[#102635] px-5 py-8 text-white">
         <div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-3">
           <div className="flex flex-col items-start gap-3">
             <div className="flex items-center gap-3">
