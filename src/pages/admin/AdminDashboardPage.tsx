@@ -257,15 +257,7 @@ export function AdminDashboardPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl bg-[#102635] p-5 text-white shadow-sm md:p-6">
-            <h2 className="text-2xl font-bold">Estado del sitio</h2>
-
-            <p className="mt-3 text-sm text-[#DCE3E8]">
-              El catálogo público toma los datos directamente desde Supabase.
-              Los cambios que hagas en productos, categorías y configuración se
-              reflejan en la página.
-            </p>
-          </section>
+          
         </aside>
       </div>
     </div>
