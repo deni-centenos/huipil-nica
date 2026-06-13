@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Star } from 'lucide-react'
 import {
   getCategorias,
   getConfiguracionNegocio,
   getProductoBySlug,
 } from '../../services/catalogService'
-import type { BusinessConfig, Category, Product } from '../../types'
+import { getPublicReviews } from '../../services/reviewService'
+import type { BusinessConfig, Category, Product, Review } from '../../types'
 import { createWhatsAppUrl, formatCurrency } from '../../utils/format'
 
 export function ProductDetailPage() {
@@ -15,6 +16,7 @@ export function ProductDetailPage() {
   const [producto, setProducto] = useState<Product | null>(null)
   const [categorias, setCategorias] = useState<Category[]>([])
   const [configuracion, setConfiguracion] = useState<BusinessConfig | null>(null)
+  const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -26,16 +28,22 @@ export function ProductDetailPage() {
         setLoading(true)
         setErrorMessage('')
 
-        const [productoData, categoriasData, configuracionData] =
-          await Promise.all([
-            getProductoBySlug(slug),
-            getCategorias(),
-            getConfiguracionNegocio(),
-          ])
+        const [
+          productoData,
+          categoriasData,
+          configuracionData,
+          reviewsData,
+        ] = await Promise.all([
+          getProductoBySlug(slug),
+          getCategorias(),
+          getConfiguracionNegocio(),
+          getPublicReviews(),
+        ])
 
         setProducto(productoData)
         setCategorias(categoriasData)
         setConfiguracion(configuracionData)
+        setReviews(reviewsData)
       } catch (error) {
         setErrorMessage(
           error instanceof Error
@@ -92,6 +100,7 @@ export function ProductDetailPage() {
 
   const categoria = categorias.find((c) => c.id === producto.categoriaId)
   const whatsapp = configuracion?.whatsapp || '50588888888'
+  const reviewsToShow = reviews.slice(0, 3)
 
   const comprarUrl = createWhatsAppUrl(
     whatsapp,
@@ -102,6 +111,24 @@ export function ProductDetailPage() {
     whatsapp,
     `Hola, estoy interesado en alquilar el producto: ${producto.nombre}. ¿Está disponible para renta?`,
   )
+
+  function renderStars(value: number) {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={18}
+            className={
+              star <= value
+                ? 'fill-yellow-400 text-yellow-500'
+                : 'text-gray-300'
+            }
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-5 pb-16 pt-10">
@@ -182,20 +209,53 @@ export function ProductDetailPage() {
       </div>
 
       <div className="mt-16">
-        <h2 className="mb-6 text-3xl font-bold text-[#102635]">Reseñas</h2>
+        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+          <div>
+            <h2 className="text-3xl font-bold text-[#102635]">Reseñas</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Opiniones reales aprobadas por el administrador.
+            </p>
+          </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((item) => (
-            <article key={item} className="bg-white p-6 shadow-sm">
-              <p className="text-yellow-500">★★★★☆</p>
-              <p className="mt-2 font-bold text-[#102635]">Luis Pérez</p>
-              <p className="mt-3 text-sm text-gray-700">
-                Servicio confiable y puntual. El traje estaba limpio, bien
-                confeccionado y listo cuando lo necesitaba.
-              </p>
-            </article>
-          ))}
+          <Link
+            to="/resenas"
+            className="font-bold text-[#102635] hover:underline"
+          >
+            Ver o agregar reseña
+          </Link>
         </div>
+
+        {reviewsToShow.length === 0 ? (
+          <div className="bg-white p-6 text-center shadow-sm">
+            <p className="font-bold text-[#102635]">
+              Todavía no hay reseñas aprobadas.
+            </p>
+            <p className="mt-2 text-sm text-gray-600">
+              Cuando el administrador apruebe reseñas de clientes, aparecerán
+              aquí.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            {reviewsToShow.map((review) => (
+              <article key={review.id} className="bg-white p-6 shadow-sm">
+                {renderStars(review.puntuacion)}
+
+                <p className="mt-2 font-bold text-[#102635]">
+                  {review.nombre} {review.apellido}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString('es-NI')}
+                </p>
+
+                <p className="mt-3 text-sm text-gray-700">
+                  {review.descripcion}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
