@@ -25,6 +25,8 @@ type FormState = {
   tiktokUrl: string
   logoUrl: string
   portadaUrl: string
+  resenasPortadaUrl: string
+  blogPortadaUrl: string
 }
 
 const initialForm: FormState = {
@@ -46,6 +48,8 @@ const initialForm: FormState = {
   tiktokUrl: '',
   logoUrl: '',
   portadaUrl: '',
+  resenasPortadaUrl: '',
+  blogPortadaUrl: '',
 }
 
 export function AdminConfigPage() {
@@ -53,9 +57,11 @@ export function AdminConfigPage() {
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [portadaFile, setPortadaFile] = useState<File | null>(null)
+  const [blogPortadaFile, setBlogPortadaFile] = useState<File | null>(null)
 
   const [logoPreview, setLogoPreview] = useState('')
   const [portadaPreview, setPortadaPreview] = useState('')
+  const [blogPortadaPreview, setBlogPortadaPreview] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -63,12 +69,13 @@ export function AdminConfigPage() {
   const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
+    let mounted = true
+
     async function loadConfig() {
       try {
-        setLoading(true)
-        setErrorMessage('')
-
         const config = await getAdminBusinessConfig()
+
+        if (!mounted) return
 
         if (!config) {
           setErrorMessage('No existe configuración del negocio en la base de datos.')
@@ -94,22 +101,33 @@ export function AdminConfigPage() {
           tiktokUrl: config.tiktokUrl,
           logoUrl: config.logoUrl,
           portadaUrl: config.portadaUrl,
+          resenasPortadaUrl: config.resenasPortadaUrl,
+          blogPortadaUrl: config.blogPortadaUrl,
         })
 
         setLogoPreview(config.logoUrl)
         setPortadaPreview(config.portadaUrl)
+        setBlogPortadaPreview(config.blogPortadaUrl)
       } catch (error) {
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'No se pudo cargar la configuración',
-        )
+        if (mounted) {
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : 'No se pudo cargar la configuración',
+          )
+        }
       } finally {
-        setLoading(false)
+        if (mounted) {
+          setLoading(false)
+        }
       }
     }
 
-    loadConfig()
+    void loadConfig()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   function handleChange(
@@ -124,7 +142,7 @@ export function AdminConfigPage() {
   }
 
   function handleLogoChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
+    const file = event.currentTarget.files?.[0]
 
     if (!file) return
 
@@ -133,12 +151,21 @@ export function AdminConfigPage() {
   }
 
   function handlePortadaChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
+    const file = event.currentTarget.files?.[0]
 
     if (!file) return
 
     setPortadaFile(file)
     setPortadaPreview(URL.createObjectURL(file))
+  }
+
+  function handleBlogPortadaChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0]
+
+    if (!file) return
+
+    setBlogPortadaFile(file)
+    setBlogPortadaPreview(URL.createObjectURL(file))
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -155,6 +182,7 @@ export function AdminConfigPage() {
 
       let logoUrl = form.logoUrl
       let portadaUrl = form.portadaUrl
+      let blogPortadaUrl = form.blogPortadaUrl
 
       if (logoFile) {
         logoUrl = await uploadBusinessImage(logoFile, 'logo')
@@ -162,6 +190,10 @@ export function AdminConfigPage() {
 
       if (portadaFile) {
         portadaUrl = await uploadBusinessImage(portadaFile, 'portada')
+      }
+
+      if (blogPortadaFile) {
+        blogPortadaUrl = await uploadBusinessImage(blogPortadaFile, 'blog')
       }
 
       const updated = await updateBusinessConfig(form.id, {
@@ -182,18 +214,26 @@ export function AdminConfigPage() {
         tiktokUrl: form.tiktokUrl.trim(),
         logoUrl,
         portadaUrl,
+        resenasPortadaUrl: form.resenasPortadaUrl,
+        blogPortadaUrl,
       })
 
       setForm((prev) => ({
         ...prev,
         logoUrl: updated.logoUrl,
         portadaUrl: updated.portadaUrl,
+        resenasPortadaUrl: updated.resenasPortadaUrl,
+        blogPortadaUrl: updated.blogPortadaUrl,
       }))
+
+      setLogoPreview(updated.logoUrl)
+      setPortadaPreview(updated.portadaUrl)
+      setBlogPortadaPreview(updated.blogPortadaUrl)
 
       setLogoFile(null)
       setPortadaFile(null)
-      setLogoPreview(updated.logoUrl)
-      setPortadaPreview(updated.portadaUrl)
+      setBlogPortadaFile(null)
+
       setSuccessMessage('Configuración guardada correctamente.')
     } catch (error) {
       setErrorMessage(
@@ -226,7 +266,7 @@ export function AdminConfigPage() {
 
           <p className="mt-2 max-w-3xl text-gray-600">
             Administra la información principal que verá el cliente en la página:
-            logo, portada, contacto, horario y textos del negocio.
+            logo, portadas, contacto, horario y textos del negocio.
           </p>
         </div>
 
@@ -432,14 +472,14 @@ export function AdminConfigPage() {
 
           <section className="rounded-3xl bg-white p-5 shadow-sm md:p-6">
             <h2 className="mb-5 text-2xl font-bold text-[#102635]">
-              Imagen de portada
+              Imagen de portada principal
             </h2>
 
             <div className="overflow-hidden rounded-3xl bg-[#F3F1ED]">
               {portadaPreview ? (
                 <img
                   src={portadaPreview}
-                  alt="Portada"
+                  alt="Portada principal"
                   className="aspect-16/9 w-full object-cover"
                 />
               ) : (
@@ -456,6 +496,41 @@ export function AdminConfigPage() {
                 type="file"
                 accept="image/*"
                 onChange={handlePortadaChange}
+                className="hidden"
+              />
+            </label>
+          </section>
+
+          <section className="rounded-3xl bg-white p-5 shadow-sm md:p-6">
+            <h2 className="mb-2 text-2xl font-bold text-[#102635]">
+              Portada de blog y videos
+            </h2>
+
+            <p className="mb-5 text-sm text-gray-500">
+              Esta imagen aparecerá al inicio de la página pública de Blog y videos.
+            </p>
+
+            <div className="overflow-hidden rounded-3xl bg-[#F3F1ED]">
+              {blogPortadaPreview ? (
+                <img
+                  src={blogPortadaPreview}
+                  alt="Portada de blog y videos"
+                  className="aspect-16/9 w-full object-cover"
+                />
+              ) : (
+                <div className="flex aspect-16/9 flex-col items-center justify-center gap-3 text-[#102635]">
+                  <ImagePlus size={42} />
+                  <p className="font-semibold">Sin portada de blog y videos</p>
+                </div>
+              )}
+            </div>
+
+            <label className="mt-5 block cursor-pointer rounded-2xl bg-[#102635] px-5 py-3 text-center font-bold text-white transition hover:bg-[#163447]">
+              Subir portada de blog y videos
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleBlogPortadaChange}
                 className="hidden"
               />
             </label>

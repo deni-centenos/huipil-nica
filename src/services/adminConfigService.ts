@@ -22,6 +22,8 @@ type ConfiguracionRow = {
   tiktok_url: string | null
   logo_url: string | null
   portada_url: string | null
+  resenas_portada_url: string | null
+  blog_portada_url: string | null
 }
 
 export type BusinessConfigInput = {
@@ -42,6 +44,8 @@ export type BusinessConfigInput = {
   tiktokUrl: string
   logoUrl: string
   portadaUrl: string
+  resenasPortadaUrl: string
+  blogPortadaUrl: string
 }
 
 function mapConfiguracion(row: ConfiguracionRow): BusinessConfig {
@@ -64,6 +68,8 @@ function mapConfiguracion(row: ConfiguracionRow): BusinessConfig {
     tiktokUrl: row.tiktok_url ?? '',
     logoUrl: row.logo_url ?? '',
     portadaUrl: row.portada_url ?? '',
+    resenasPortadaUrl: row.resenas_portada_url ?? '',
+    blogPortadaUrl: row.blog_portada_url ?? '',
   }
 }
 
@@ -71,7 +77,7 @@ export async function getAdminBusinessConfig(): Promise<BusinessConfig | null> {
   const { data, error } = await supabase
     .from('configuracion_negocio')
     .select(
-      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url',
+      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url, resenas_portada_url, blog_portada_url',
     )
     .order('id', { ascending: true })
     .limit(1)
@@ -110,11 +116,13 @@ export async function updateBusinessConfig(
       tiktok_url: input.tiktokUrl,
       logo_url: input.logoUrl || null,
       portada_url: input.portadaUrl || null,
+      resenas_portada_url: input.resenasPortadaUrl || null,
+      blog_portada_url: input.blogPortadaUrl || null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
     .select(
-      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url',
+      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url, resenas_portada_url, blog_portada_url',
     )
     .single()
 
@@ -127,7 +135,7 @@ export async function updateBusinessConfig(
 
 export async function uploadBusinessImage(
   file: File,
-  folder: 'logo' | 'portada',
+  folder: 'logo' | 'portada' | 'blog' | 'resenas',
 ): Promise<string> {
   const extension = file.name.split('.').pop() ?? 'jpg'
   const safeName = `${folder}-${Date.now()}-${Math.random()

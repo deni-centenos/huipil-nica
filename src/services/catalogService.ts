@@ -27,6 +27,29 @@ type ProductoRow = {
   activo: boolean
 }
 
+type ConfiguracionRow = {
+  id: number
+  nombre_negocio: string | null
+  slogan: string | null
+  descripcion_inicio: string | null
+  texto_portada: string | null
+  mision: string | null
+  vision: string | null
+  historia: string | null
+  telefono: string | null
+  whatsapp: string | null
+  direccion: string | null
+  google_maps_url: string | null
+  horario: string | null
+  facebook_url: string | null
+  instagram_url: string | null
+  tiktok_url: string | null
+  logo_url: string | null
+  portada_url: string | null
+  resenas_portada_url: string | null
+  blog_portada_url: string | null
+}
+
 function mapCategoria(row: CategoriaRow): Category {
   return {
     id: row.id,
@@ -55,6 +78,31 @@ function mapProducto(row: ProductoRow): Product {
     estado: row.estado,
     destacado: row.destacado,
     activo: row.activo,
+  }
+}
+
+function mapConfiguracion(row: ConfiguracionRow): BusinessConfig {
+  return {
+    id: row.id,
+    nombreNegocio: row.nombre_negocio ?? 'Huipil Nica',
+    slogan: row.slogan ?? '',
+    descripcionInicio: row.descripcion_inicio ?? '',
+    textoPortada: row.texto_portada ?? '',
+    mision: row.mision ?? '',
+    vision: row.vision ?? '',
+    historia: row.historia ?? '',
+    telefono: row.telefono ?? '',
+    whatsapp: row.whatsapp ?? '',
+    direccion: row.direccion ?? '',
+    googleMapsUrl: row.google_maps_url ?? '',
+    horario: row.horario ?? '',
+    facebookUrl: row.facebook_url ?? '',
+    instagramUrl: row.instagram_url ?? '',
+    tiktokUrl: row.tiktok_url ?? '',
+    logoUrl: row.logo_url ?? '',
+    portadaUrl: row.portada_url ?? '',
+    resenasPortadaUrl: row.resenas_portada_url ?? '',
+    blogPortadaUrl: row.blog_portada_url ?? '',
   }
 }
 
@@ -107,55 +155,11 @@ export async function getProductoBySlug(slug: string): Promise<Product | null> {
   return mapProducto(data as ProductoRow)
 }
 
-type ConfiguracionRow = {
-  id: number
-  nombre_negocio: string | null
-  slogan: string | null
-  descripcion_inicio: string | null
-  texto_portada: string | null
-  mision: string | null
-  vision: string | null
-  historia: string | null
-  telefono: string | null
-  whatsapp: string | null
-  direccion: string | null
-  google_maps_url: string | null
-  horario: string | null
-  facebook_url: string | null
-  instagram_url: string | null
-  tiktok_url: string | null
-  logo_url: string | null
-  portada_url: string | null
-}
-
-function mapConfiguracion(row: ConfiguracionRow): BusinessConfig {
-  return {
-    id: row.id,
-    nombreNegocio: row.nombre_negocio ?? 'Huipil Nica',
-    slogan: row.slogan ?? '',
-    descripcionInicio: row.descripcion_inicio ?? '',
-    textoPortada: row.texto_portada ?? '',
-    mision: row.mision ?? '',
-    vision: row.vision ?? '',
-    historia: row.historia ?? '',
-    telefono: row.telefono ?? '',
-    whatsapp: row.whatsapp ?? '',
-    direccion: row.direccion ?? '',
-    googleMapsUrl: row.google_maps_url ?? '',
-    horario: row.horario ?? '',
-    facebookUrl: row.facebook_url ?? '',
-    instagramUrl: row.instagram_url ?? '',
-    tiktokUrl: row.tiktok_url ?? '',
-    logoUrl: row.logo_url ?? '',
-    portadaUrl: row.portada_url ?? '',
-  }
-}
-
 export async function getConfiguracionNegocio(): Promise<BusinessConfig | null> {
   const { data, error } = await supabase
     .from('configuracion_negocio')
     .select(
-      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url',
+      'id, nombre_negocio, slogan, descripcion_inicio, texto_portada, mision, vision, historia, telefono, whatsapp, direccion, google_maps_url, horario, facebook_url, instagram_url, tiktok_url, logo_url, portada_url, resenas_portada_url, blog_portada_url',
     )
     .order('id', { ascending: true })
     .limit(1)

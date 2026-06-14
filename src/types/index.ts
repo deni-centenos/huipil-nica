@@ -44,6 +44,8 @@ export type BusinessConfig = {
   tiktokUrl: string
   logoUrl: string
   portadaUrl: string
+  resenasPortadaUrl: string
+  blogPortadaUrl: string
 }
 
 export type BlogContentType = 'BLOG' | 'VIDEO'

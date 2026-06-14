@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { Send, Star } from 'lucide-react'
-import type { Review, ReviewFormInput } from '../../types'
+import type { BusinessConfig, Review, ReviewFormInput } from '../../types'
+import { getConfiguracionNegocio } from '../../services/catalogService'
 import { createReview, getPublicReviews } from '../../services/reviewService'
 
 const emptyForm: ReviewFormInput = {
@@ -13,6 +14,7 @@ const emptyForm: ReviewFormInput = {
 
 export function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [config, setConfig] = useState<BusinessConfig | null>(null)
   const [form, setForm] = useState<ReviewFormInput>(emptyForm)
 
   const [loading, setLoading] = useState(true)
@@ -25,10 +27,14 @@ export function ReviewsPage() {
 
     async function loadReviews() {
       try {
-        const data = await getPublicReviews()
+        const [reviewsData, configData] = await Promise.all([
+          getPublicReviews(),
+          getConfiguracionNegocio(),
+        ])
 
         if (mounted) {
-          setReviews(data)
+          setReviews(reviewsData)
+          setConfig(configData)
         }
       } catch {
         if (mounted) {
@@ -47,6 +53,9 @@ export function ReviewsPage() {
       mounted = false
     }
   }, [])
+
+  const imagenPortada =
+    config?.resenasPortadaUrl || config?.portadaUrl || '/img/fondo-catalogo.png'
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -126,178 +135,197 @@ export function ReviewsPage() {
   }
 
   return (
-    <section className="px-5 pt-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 max-w-3xl">
-          <p className="mb-3 text-sm font-bold uppercase tracking-[0.4em] text-[#102635]">
-            Reseñas
-          </p>
+    <div>
+      {/* PORTADA RESEÑAS */}
+<section className="relative min-h-115 overflow-hidden md:min-h-130">
+  <img
+    src={imagenPortada}
+    alt="Portada reseñas"
+    className="absolute inset-0 h-full w-full object-cover"
+  />
 
-          <h1 className="text-4xl font-black text-[#102635] md:text-5xl">
-            Opiniones de nuestros clientes
-          </h1>
+  <div className="absolute inset-0 bg-black/25" />
+</section>
 
-          <p className="mt-4 text-lg text-gray-600">
-            Comparte tu experiencia con Huipil Nica. Las reseñas son revisadas
-            antes de mostrarse públicamente.
-          </p>
-        </div>
+{/* INTRODUCCIÓN RESEÑAS */}
+<section className="bg-[#F3F1ED] px-5 py-12 md:py-16">
+  <div className="mx-auto max-w-7xl">
+    <div className="max-w-4xl">
+      <p className="mb-3 text-sm font-bold uppercase tracking-[0.4em] text-[#102635]">
+        Reseñas
+      </p>
 
-        <div className="grid gap-10 lg:grid-cols-[420px_1fr]">
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-4xl bg-white p-6 shadow-md"
-          >
-            <h2 className="mb-5 text-2xl font-black text-[#102635]">
-              Agregar reseña
-            </h2>
+      <h1 className="text-4xl font-black leading-tight text-[#102635] md:text-6xl">
+        Opiniones de nuestros clientes
+      </h1>
 
-            {error && (
-              <div className="mb-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">
-                {error}
-              </div>
-            )}
+      <p className="mt-5 max-w-3xl text-lg leading-8 text-gray-600">
+        Comparte tu experiencia con Huipil Nica. Las reseñas son revisadas
+        antes de mostrarse públicamente.
+      </p>
+    </div>
+  </div>
+</section>
 
-            {success && (
-              <div className="mb-4 rounded-2xl bg-green-50 p-4 text-sm font-semibold text-green-700">
-                {success}
-              </div>
-            )}
-
-            <div className="space-y-5">
-              <label className="space-y-2">
-                <span className="text-sm font-bold text-[#102635]">
-                  Nombre
-                </span>
-                <input
-                  type="text"
-                  name="nombre"
-                  value={form.nombre}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
-                  placeholder="Tu nombre"
-                />
-              </label>
-
-              <label className="space-y-2">
-                <span className="text-sm font-bold text-[#102635]">
-                  Apellido
-                </span>
-                <input
-                  type="text"
-                  name="apellido"
-                  value={form.apellido}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
-                  placeholder="Tu apellido"
-                />
-              </label>
-
-              <div className="space-y-2">
-                <span className="text-sm font-bold text-[#102635]">
-                  Puntuación
-                </span>
-
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() =>
-                        setForm((prev) => ({
-                          ...prev,
-                          puntuacion: star,
-                        }))
-                      }
-                      className="rounded-full p-1 transition hover:scale-110"
-                      aria-label={`${star} estrellas`}
-                    >
-                      <Star
-                        size={30}
-                        className={
-                          star <= form.puntuacion
-                            ? 'fill-yellow-400 text-yellow-500'
-                            : 'text-gray-300'
-                        }
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <label className="space-y-2">
-                <span className="text-sm font-bold text-[#102635]">
-                  Descripción
-                </span>
-                <textarea
-                  name="descripcion"
-                  value={form.descripcion}
-                  onChange={handleChange}
-                  rows={5}
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
-                  placeholder="Cuéntanos tu experiencia"
-                />
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#102635] px-6 py-3 font-bold text-white disabled:opacity-60"
+      {/* CONTENIDO RESEÑAS */}
+      <section className="bg-[#F3F1ED] px-5 py-12 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[420px_1fr]">
+            <form
+              onSubmit={handleSubmit}
+              className="rounded-4xl bg-white p-6 shadow-md"
             >
-              <Send size={18} />
-              {saving ? 'Enviando...' : 'Enviar reseña'}
-            </button>
-          </form>
+              <h2 className="mb-5 text-2xl font-black text-[#102635]">
+                Agregar reseña
+              </h2>
 
-          <div>
-            <h2 className="mb-5 text-2xl font-black text-[#102635]">
-              Reseñas publicadas
-            </h2>
+              {error && (
+                <div className="mb-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">
+                  {error}
+                </div>
+              )}
 
-            {loading && (
-              <div className="rounded-3xl bg-white p-8 text-center shadow">
-                Cargando reseñas...
+              {success && (
+                <div className="mb-4 rounded-2xl bg-green-50 p-4 text-sm font-semibold text-green-700">
+                  {success}
+                </div>
+              )}
+
+              <div className="space-y-5">
+                <label className="space-y-2">
+                  <span className="text-sm font-bold text-[#102635]">
+                    Nombre
+                  </span>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
+                    placeholder="Tu nombre"
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-sm font-bold text-[#102635]">
+                    Apellido
+                  </span>
+                  <input
+                    type="text"
+                    name="apellido"
+                    value={form.apellido}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
+                    placeholder="Tu apellido"
+                  />
+                </label>
+
+                <div className="space-y-2">
+                  <span className="text-sm font-bold text-[#102635]">
+                    Puntuación
+                  </span>
+
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() =>
+                          setForm((prev) => ({
+                            ...prev,
+                            puntuacion: star,
+                          }))
+                        }
+                        className="rounded-full p-1 transition hover:scale-110"
+                        aria-label={`${star} estrellas`}
+                      >
+                        <Star
+                          size={30}
+                          className={
+                            star <= form.puntuacion
+                              ? 'fill-yellow-400 text-yellow-500'
+                              : 'text-gray-300'
+                          }
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <label className="space-y-2">
+                  <span className="text-sm font-bold text-[#102635]">
+                    Descripción
+                  </span>
+                  <textarea
+                    name="descripcion"
+                    value={form.descripcion}
+                    onChange={handleChange}
+                    rows={5}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#102635]"
+                    placeholder="Cuéntanos tu experiencia"
+                  />
+                </label>
               </div>
-            )}
 
-            {!loading && reviews.length === 0 && (
-              <div className="rounded-3xl bg-white p-8 text-center shadow">
-                Todavía no hay reseñas publicadas.
-              </div>
-            )}
+              <button
+                type="submit"
+                disabled={saving}
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#102635] px-6 py-3 font-bold text-white disabled:opacity-60"
+              >
+                <Send size={18} />
+                {saving ? 'Enviando...' : 'Enviar reseña'}
+              </button>
+            </form>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              {reviews.map((review) => (
-                <article
-                  key={review.id}
-                  className="rounded-4xl bg-white p-6 shadow-md"
-                >
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-black text-[#102635]">
-                        {review.nombre} {review.apellido}
-                      </h3>
+            <div>
+              <h2 className="mb-5 text-2xl font-black text-[#102635]">
+                Reseñas publicadas
+              </h2>
 
-                      <p className="text-xs text-gray-500">
-                        {new Date(review.createdAt).toLocaleDateString(
-                          'es-NI',
-                        )}
-                      </p>
+              {loading && (
+                <div className="rounded-3xl bg-white p-8 text-center shadow">
+                  Cargando reseñas...
+                </div>
+              )}
+
+              {!loading && reviews.length === 0 && (
+                <div className="rounded-3xl bg-white p-8 text-center shadow">
+                  Todavía no hay reseñas publicadas.
+                </div>
+              )}
+
+              <div className="grid gap-5 md:grid-cols-2">
+                {reviews.map((review) => (
+                  <article
+                    key={review.id}
+                    className="rounded-4xl bg-white p-6 shadow-md"
+                  >
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-black text-[#102635]">
+                          {review.nombre} {review.apellido}
+                        </h3>
+
+                        <p className="text-xs text-gray-500">
+                          {new Date(review.createdAt).toLocaleDateString(
+                            'es-NI',
+                          )}
+                        </p>
+                      </div>
+
+                      {renderStars(review.puntuacion)}
                     </div>
 
-                    {renderStars(review.puntuacion)}
-                  </div>
-
-                  <p className="leading-7 text-gray-700">
-                    “{review.descripcion}”
-                  </p>
-                </article>
-              ))}
+                    <p className="leading-7 text-gray-700">
+                      “{review.descripcion}”
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

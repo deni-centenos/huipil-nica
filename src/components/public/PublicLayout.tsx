@@ -17,28 +17,41 @@ export function PublicLayout() {
 
   const location = useLocation()
   const isHome = location.pathname === '/'
+  const hasOverlayHeader = isHome || location.pathname === '/blog'
 
   useEffect(() => {
+    let mounted = true
+
     async function loadConfig() {
       try {
         const data = await getConfiguracionNegocio()
-        setConfig(data)
+
+        if (mounted) {
+          setConfig(data)
+        }
       } catch {
-        setConfig(null)
+        if (mounted) {
+          setConfig(null)
+        }
       }
     }
 
-    loadConfig()
+    void loadConfig()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   const nombreNegocio = config?.nombreNegocio || 'HUIPIL NICA'
 
   return (
     <div className="min-h-screen bg-[#F3F1ED] text-[#1F2933]">
-      {/* HEADER */}
       <header
         className={`left-0 right-0 top-0 z-50 px-4 pt-4 ${
-          isHome ? 'absolute' : 'sticky bg-[#F3F1ED]/95 pb-4 backdrop-blur'
+          hasOverlayHeader
+            ? 'absolute'
+            : 'sticky bg-[#F3F1ED]/95 pb-4 backdrop-blur'
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full bg-[#102635] px-5 py-3 shadow-lg">
@@ -60,26 +73,24 @@ export function PublicLayout() {
             </p>
           </Link>
 
-{/* MENÚ PC */}
-<nav className="hidden items-center gap-6 md:flex">
-  {navItems.map((item) => (
-    <NavLink
-      key={item.to}
-      to={item.to}
-      className={({ isActive }) =>
-        `text-sm font-medium transition ${
-          isActive
-            ? 'text-white'
-            : 'text-[#DCE3E8] hover:text-white'
-        }`
-      }
-    >
-      {item.label}
-    </NavLink>
-  ))}
-</nav>
+          <nav className="hidden items-center gap-6 md:flex">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `text-sm font-medium transition ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-[#DCE3E8] hover:text-white'
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
 
-          {/* BOTÓN MENÚ MÓVIL */}
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -91,7 +102,6 @@ export function PublicLayout() {
         </div>
       </header>
 
-      {/* MENÚ MÓVIL */}
       {open && (
         <div className="fixed inset-0 z-50 bg-black/40 md:hidden">
           <aside className="ml-auto h-full w-80 max-w-[85%] bg-[#F3F1ED] p-6 shadow-2xl">
@@ -143,22 +153,18 @@ export function PublicLayout() {
                   {item.label}
                 </NavLink>
               ))}
-
-              
             </nav>
           </aside>
         </div>
       )}
 
-      {/* CONTENIDO */}
-<main>
-  <Outlet />
-</main>
+      <main>
+        <Outlet />
+      </main>
 
-<FloatingWhatsAppButton config={config} />
+      <FloatingWhatsAppButton config={config} />
 
-{/* FOOTER */}
-<footer className="mt-16 bg-[#102635] px-5 py-8 text-white">
+      <footer className="mt-16 bg-[#102635] px-5 py-8 text-white">
         <div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-3">
           <div className="flex flex-col items-start gap-3">
             <div className="flex items-center gap-3">
@@ -221,13 +227,13 @@ export function PublicLayout() {
             </Link>
 
             <Link
-  to="/admin/login"
-  className="mt-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-[#C9D6DF] transition hover:bg-white hover:text-[#102635]"
-  aria-label="Acceso dueño"
-  title="Acceso dueño"
->
-  <UserRound size={20} />
-</Link>
+              to="/admin/login"
+              className="mt-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-[#C9D6DF] transition hover:bg-white hover:text-[#102635]"
+              aria-label="Acceso dueño"
+              title="Acceso dueño"
+            >
+              <UserRound size={20} />
+            </Link>
           </div>
         </div>
       </footer>
